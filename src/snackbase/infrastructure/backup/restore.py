@@ -999,7 +999,14 @@ def mark_audit_pending(settings: Settings, event: str, archive_name: str) -> Non
 
 
 def pop_audit_pending(settings: Settings) -> dict[str, str] | None:
-    """Read and clear the audit-pending flag, if present."""
+    """Read and clear the audit-pending flag, if present.
+
+    The pending audit marker belongs to the SQLite file-based restore flow.
+    PostgreSQL boots must not resolve SQLite paths just to check for it.
+    """
+    if running_engine(settings.database_url) != "sqlite":
+        return None
+
     path = data_dir(settings) / AUDIT_PENDING_FILENAME
     if not path.is_file():
         return None

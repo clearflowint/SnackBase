@@ -418,6 +418,24 @@ class TestOldRetention:
 
 
 class TestAuditPendingFlag:
+    def test_postgres_engine_is_noop(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+        """PostgreSQL must not resolve the SQLite restore marker path."""
+        settings = Settings(
+            database_url="postgresql+asyncpg://u:p@localhost/db",
+            storage_path=str(tmp_path / "sb_data" / "files"),
+            _env_file=None,
+        )
+
+        def fail_if_data_dir_is_resolved(_: Settings) -> Path:
+            pytest.fail("PostgreSQL must not resolve SQLite restore paths")
+
+        monkeypatch.setattr(
+            "snackbase.infrastructure.backup.restore.data_dir",
+            fail_if_data_dir_is_resolved,
+        )
+
+        assert pop_audit_pending(settings) is None
+
     def test_success_writes_no_pending_flag(self, tmp_path: Path) -> None:
         """The completed event is written by finalize, not the executor."""
         settings = _make_settings(tmp_path)
