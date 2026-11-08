@@ -22,7 +22,7 @@ COPY ui/package.json ui/package-lock.json ./
 # `npm ci` installs the locked tree exactly — the same versions CI and a local
 # checkout resolve. The SDK packages come from the registry like any other
 # dependency, so this needs nothing outside the SnackBase build context.
-RUN npm ci
+RUN npm audit fix --package-lock-only && npm ci
 
 COPY ui/ .
 
