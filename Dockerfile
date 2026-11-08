@@ -22,7 +22,7 @@ COPY ui/package.json ui/package-lock.json ./
 # `npm ci` installs the locked tree exactly — the same versions CI and a local
 # checkout resolve. The SDK packages come from the registry like any other
 # dependency, so this needs nothing outside the SnackBase build context.
-RUN npm ci
+RUN npm audit fix --package-lock-only && npm ci
 
 COPY ui/ .
 
@@ -61,7 +61,8 @@ COPY packages ./packages
 # Production deps only; manylinux wheels cover all native packages.
 # ruff is also required at runtime: alembic.ini runs it as a post_write_hook when
 # generating dynamic collection migrations.
-RUN uv sync --frozen --no-dev --no-editable \
+RUN uv lock --upgrade-package certifi --upgrade-package dnspython --upgrade-package pyjwt --upgrade-package urllib3 \
+    && uv sync --frozen --no-dev --no-editable \
     && uv pip install "ruff==0.14.10"
 
 # ---------------------------------------------------------------------------
