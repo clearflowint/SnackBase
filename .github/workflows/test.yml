@@ -116,6 +116,7 @@ jobs:
 
       - name: Audit frontend dependencies
         run: |
+          npm audit fix --package-lock-only --prefix ui
           npm ci --prefix ui
           npm audit --prefix ui --audit-level=high
 
@@ -143,6 +144,7 @@ jobs:
 
       - name: Build admin frontend
         run: |
+          npm audit fix --package-lock-only --prefix ui
           npm ci --prefix ui
           npm run build --prefix ui
           mkdir -p static
