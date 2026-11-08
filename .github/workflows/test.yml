@@ -145,6 +145,8 @@ jobs:
         run: |
           npm ci --prefix ui
           npm run build --prefix ui
+          mkdir -p static
+          cp -a ui/dist/. static/
 
       - name: Upgrade security-patched dependencies
         run: uv lock --upgrade-package certifi --upgrade-package dnspython --upgrade-package pyjwt --upgrade-package urllib3
